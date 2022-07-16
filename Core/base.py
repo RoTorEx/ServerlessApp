@@ -5,7 +5,7 @@ class DynamoDBControls:
     def create_table(client, *args, **kwargs):
         '''Create table in DynamoDB.'''
 
-        table_name = input("Enter the name of the table to create: ")
+        table_name = input("Enter the table name: ")
 
         try:
             response = client.create_table(
@@ -41,7 +41,7 @@ class DynamoDBControls:
     def delete_table(client, *args, **kwargs):
         '''Delete table from DynamoDB.'''
 
-        table_name = input("Enter the name of the table to delete: ")
+        table_name = input("Enter the table name: ")
 
         try:
             response = client.delete_table(
@@ -54,3 +54,16 @@ class DynamoDBControls:
         except Exception as e:
             print("Error deleting table:")
             print(e)
+
+    @staticmethod
+    def get_item(client, *args, **kwargs):
+        '''Get item from DynamoDB by id.'''
+
+        table_name = input("Enter the table name: ")
+        table = client.Table(table_name)
+
+        response = table.get_item(Key={"id": 1})
+        print(response)
+
+        print(response['Item'])
+        print()
