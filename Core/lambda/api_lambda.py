@@ -1,7 +1,7 @@
 import json
 
-from enums import Var, Method, Path
-from custom_encoder import CustomEncoder
+from api_enums import Var, Method, Path
+from api_encoder import CustomEncoder
 
 
 def lambda_handler(event, context):
@@ -165,18 +165,3 @@ def get_customers():
 
     except:
         Var.LOGGER.value.exception("Do your custom error here. I am just gonna log it out here!")
-
-
-
-
-# # from set_env import AWS_CREDS, AWS_VARS  # Delete from AWS Lambda
-# from custom_encoder import CustomEncoder
-
-
-# logger = logging.getLogger()
-# logger.setLevel(logging.INFO)
-
-# table_name = "MallCustomers"
-# # dynamodb = boto3.resource("dynamodb", region_name='us-east-1', **AWS_CREDS)  # Delete from AWS Lambda
-# dynamodb = boto3.resource("dynamodb")  # Put that code to AWS Lambda
-# table = dynamodb.Table(table_name)
