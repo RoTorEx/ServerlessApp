@@ -12,14 +12,14 @@ class DynamoDBControls:
                 TableName=table_name,
                 KeySchema=[
                     {
-                        "AttributeName": "Id",
+                        "AttributeName": "id",
                         "KeyType": "HASH"
                     },
                 ],
 
                 AttributeDefinitions=[
                     {
-                        "AttributeName": "Id",
+                        "AttributeName": "id",
                         "AttributeType": "N"
                     },
                 ],
