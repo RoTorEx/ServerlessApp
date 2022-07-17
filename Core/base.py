@@ -23,7 +23,7 @@ class DynamoDBControls:
                 AttributeDefinitions=[
                     {
                         "AttributeName": "id",
-                        "AttributeType": "N"
+                        "AttributeType": "S"
                     },
                 ],
 
@@ -63,13 +63,32 @@ class DynamoDBControls:
         '''Get item from DynamoDB by id.'''
 
         table_name = input("Enter the table name: ")
-        table = client.Table(table_name)
 
-        response = table.get_item(Key={"id": 1})
-        print(response)
-
+        response = client.get_item(
+            TableName=table_name,
+            Key={"id": {"N": "2"}}
+        )
         print(response['Item'])
-        print()
+
+    @staticmethod
+    def put_item(client, *args, **kwargs):
+        '''Put item to DynamoDB.'''
+
+        table_name = input("Enter the table name: ")
+
+        response = client.put_item(
+            TableName=table_name,
+            Item={
+                "id": {"S": "0001"},
+                "gender": {"S": "Male"},
+                "age": {"N": "19"},
+                "annual income": {"N": "15"},
+                "spending score": {"N": "39"}
+            }
+        )
+        print("Item insert into DynamoDB successfully!")
+
+        return response
 
 
 class S3Bucket():
