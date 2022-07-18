@@ -1,83 +1,70 @@
 from pathlib import Path
 
+import boto3
+
 
 class DynamoDBControls:
-    '''Interfaces for interaction with dynamoDB.'''
+    '''Interfaces for interaction with DynamoDB.'''
 
-    @staticmethod
-    def create_table(client, *args, **kwargs):
+    _client = None
+
+    def __init__(self, service_name, aws_creds, table_name):
+        self._client = boto3.client(service_name=service_name, region_name="us-east-1", **aws_creds)
+        self.table_name = table_name
+
+    def create_table(self):
         '''Create table in DynamoDB.'''
 
-        table_name = input("Enter the table name: ")
+        response = self._client.create_table(
+            TableName=self.table_name,
+            KeySchema=[
+                {
+                    "AttributeName": "id",
+                    "KeyType": "HASH"
+                },
+            ],
 
-        try:
-            response = client.create_table(
-                TableName=table_name,
-                KeySchema=[
-                    {
-                        "AttributeName": "id",
-                        "KeyType": "HASH"
-                    },
-                ],
+            AttributeDefinitions=[
+                {
+                    "AttributeName": "id",
+                    "AttributeType": "S"
+                },
+            ],
 
-                AttributeDefinitions=[
-                    {
-                        "AttributeName": "id",
-                        "AttributeType": "S"
-                    },
-                ],
+            ProvisionedThroughput={
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+            }
+        )
+        print(f"Table '{self.table_name}' created successfully!")
 
-                ProvisionedThroughput={
-                    "ReadCapacityUnits": 1,
-                    "WriteCapacityUnits": 1
-                }
-            )
-            print("Table created successfully!")
+        return response
 
-            return response
-
-        except Exception as e:
-            print("Error creating table:")
-            print(e)
-
-    @staticmethod
-    def delete_table(client, *args, **kwargs):
+    def delete_table(self):
         '''Delete table from DynamoDB.'''
 
-        table_name = input("Enter the table name: ")
+        response = self._client.delete_table(
+            TableName=self.table_name,
+        )
+        print(f"Table '{self.table_name}' deleted successfully!")
 
-        try:
-            response = client.delete_table(
-                TableName=table_name,
-            )
-            print("Table deleted successfully!")
+        return response
 
-            return response
-
-        except Exception as e:
-            print("Error deleting table:")
-            print(e)
-
-    @staticmethod
-    def get_item(client, *args, **kwargs):
+    def get_item(self):
         '''Get item from DynamoDB by id.'''
 
-        table_name = input("Enter the table name: ")
-
-        response = client.get_item(
-            TableName=table_name,
-            Key={"id": {"N": "2"}}
+        response = self._client.get_item(
+            TableName=self.table_name,
+            Key={"id": {"S": "0001"}}
         )
-        print(response['Item'])
 
-    @staticmethod
-    def put_item(client, *args, **kwargs):
+        print(f"Item: {response['Item']}")
+
+    def put_item(self):
         '''Put item to DynamoDB.'''
 
-        table_name = input("Enter the table name: ")
-
-        response = client.put_item(
-            TableName=table_name,
+        response = self._client.put_item(
+            TableName=self.table_name,
             Item={
                 "id": {"S": "0001"},
                 "gender": {"S": "Male"},
@@ -91,9 +78,15 @@ class DynamoDBControls:
         return response
 
 
-class S3Bucket():
-    @staticmethod
-    def upload(client, *args, **kwargs):
+class S3Bucket:
+    '''Interfaces for interaction with S3.'''
+
+    _client = None
+
+    def __init__(self, service_name, aws_creds):
+        self._client = boto3.client(service_name=service_name, region_name="us-east-1", **aws_creds)
+
+    def upload(self):
         '''Upload file to S3 Bucket.'''
 
         bucket = "csv-dropper"  # S3 Bucket
@@ -104,10 +97,5 @@ class S3Bucket():
         data_path = str(Path(__file__).resolve().parent.parent) + "/Data"
         data_binary = open(data_path + "/" + file_name, "rb").read()
 
-        try:
-            client.put_object(Bucket=bucket, Key=key, Body=data_binary)
-            print(f"File '{file_name}' uploaded successfully!")
-
-        except Exception as e:
-            print("Error uploading file:")
-            print(e)
+        self._client.put_object(Bucket=bucket, Key=key, Body=data_binary)
+        print(f"File '{file_name}' uploaded successfully!")

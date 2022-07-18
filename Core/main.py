@@ -23,85 +23,74 @@ def get_credentials():
     return aws_creds
 
 
-def aws_dynamodb(client):
+def aws_dynamodb(service_name, aws_creds):
     '''Function for DynamoDB.'''
 
-    dynamo_methods = list(filter(lambda meth: not meth.startswith("__"), dir(DynamoDBControls)))
+    table_name = "MallCustomers"  # noqa
+    dynamo_methods = list(filter(lambda meth: not meth.startswith("_"), dir(DynamoDBControls)))
 
     print(f"\nAvailable methods: {dynamo_methods}.\n")
 
-    try:
-        while True:
-            user_input = input("Enter preferred work type: ").lower().strip()
+    session = DynamoDBControls(service_name, aws_creds, table_name)  # noqa
 
-            try:
-                exec(f"DynamoDBControls.{user_input}(client)")
-                sys.exit()
+    while True:
+        user_input = input("Enter preferred work type or skip to quit: ").lower().strip()
 
-            except AttributeError:
-                print("Unsupported method. Сheck out the documentation and try again.")
-                continue
+        if user_input in dynamo_methods:
+            exec(f"session.{user_input}()")
+            print("==< ~ >===")
 
-            except SyntaxError:
-                print("Enter method's name.")
-                continue
+        elif not user_input:
+            break
 
-    except KeyboardInterrupt:
-        sys.exit("\nThe program was stopped forcibly in DynamoDB control function.")
+        else:
+            print("Unsupported method. Сheck out the documentation and try again.")
 
 
-def aws_s3(client):
+def aws_s3(service_name, aws_creds):
     '''Function for S3 Bucket.'''
 
-    s3_methods = list(filter(lambda meth: not meth.startswith("__"), dir(S3Bucket)))
+    s3_methods = list(filter(lambda meth: not meth.startswith("_"), dir(S3Bucket)))
 
     print(f"\nAvailable methods: {s3_methods}.\n")
 
-    try:
-        while True:
-            user_input = input("Enter preferred work type: ").lower().strip()
+    session = S3Bucket(service_name, aws_creds)  # noqa
 
-            try:
-                exec(f"S3Bucket.{user_input}(client)")
-                sys.exit()
+    while True:
+        user_input = input("Enter preferred work type or skip to quit: ").lower().strip()
 
-            except AttributeError:
-                print("Unsupported method. Сheck out the documentation and try again.")
-                continue
+        if user_input in s3_methods:
+            exec(f"session.{user_input}()")
+            print("==< ~ >===\n")
 
-            except SyntaxError:
-                print("Enter method's name.")
-                continue
+        elif not user_input:
+            break
 
-    except KeyboardInterrupt:
-        sys.exit("\nThe program was stopped forcibly in S3 control function.")
+        else:
+            print("Unsupported method. Сheck out the documentation and try again.")
 
 
 def main():
     '''Entry point to AWS DynamoDB & S3 Bucket.'''
 
     aws = {
-        "dynamodb": aws_dynamodb,  # DynamoDB
-        "s3": aws_s3,  # S3
+        "dynamodb": aws_dynamodb,
+        "s3": aws_s3,
     }
 
-    aws_creds = get_credentials()
+    while True:
+        print("Available services:", [srvs for srvs in aws])
+        user_input = input("Choose preferred AWS  or skip to exit: ").lower()
 
-    try:
-        while True:
-            user_input = input("Choose preferred AWS: ").lower()
+        if user_input in aws:
+            aws[user_input](user_input, get_credentials())
 
-            if user_input in aws:
-                client = boto3.client(service_name=user_input, region_name="us-east-1", **aws_creds)  # noqa
-                aws[user_input](client)
-                break
+        elif not user_input:
+            sys.exit()
 
-            else:
-                print(f"Such service ({user_input}) does not exist in the current script.")
-                continue
-
-    except KeyboardInterrupt:
-        sys.exit("\nThe program was stopped forcibly on main function.")
+        else:
+            print(f"Such service ({user_input}) does not exist in the current script.")
+            continue
 
 
 if __name__ == "__main__":
