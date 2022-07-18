@@ -98,4 +98,17 @@ class S3Bucket:
         data_binary = open(data_path + "/" + file_name, "rb").read()
 
         self._client.put_object(Bucket=bucket, Key=key, Body=data_binary)
+
         print(f"File '{file_name}' uploaded successfully!")
+
+    def delete(self):
+        '''Delete file from S3 Bucket.'''
+
+        bucket = "csv-dropper"
+        file_name = "mall_customers.csv"
+        folder_name = ""
+        key = folder_name + file_name
+
+        self._client.put_object(Bucket=bucket, Key=key)
+
+        print(f"File '{file_name}' removed successfully!")
