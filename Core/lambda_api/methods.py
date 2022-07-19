@@ -32,7 +32,7 @@ def get_customer(table, logger, id):
     try:
         response = table.get_item(
             Key={
-                "id": id
+                "id": int(id)
             }
         )
 
@@ -69,7 +69,7 @@ def patch_customer(table, logger, id, update_key, update_value):
     try:
         response = table.update_item(
             Key={
-                "id": id
+                "id": int(id)
             },
             UpdateExpression="set %s = :value" % update_key,
             ExpressionAttributeValues={
@@ -96,7 +96,7 @@ def delete_customer(table, logger, id):
     try:
         respone = table.delete_item(
             Key={
-                "id": id
+                "id": int(id)
             },
             ReturnValues="ALL_OLD"
         )
@@ -129,7 +129,7 @@ def get_customers(table, logger):
             result.extend(response["Items"])
 
         body = {
-            "products": result
+            "customers": result
         }
 
     except:
