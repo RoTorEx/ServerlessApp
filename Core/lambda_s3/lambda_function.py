@@ -25,11 +25,11 @@ def lambda_handler(event, context):
             line = line.strip("\r").split(",")
 
             item = {
-                "id": {"S": line[0]},
-                "gender": {"S": line[1]},
-                "age": {"N": line[2]},
-                "annual income": {"N": line[3]},
-                "spending score": {"N": line[4]}
+                "id": int(line[0]),
+                "gender": str(line[1]),
+                "age": int(line[2]),
+                "annual income": int(line[3]),
+                "spending score": int(line[4])
             }
 
             data_list.append(item)
