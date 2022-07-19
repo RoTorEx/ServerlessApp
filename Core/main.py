@@ -38,7 +38,7 @@ def aws_dynamodb(service_name, aws_creds):
 
         if user_input in dynamo_methods:
             exec(f"session.{user_input}()")
-            print("==< ~ >===")
+            print("==< ~ >===\n")
 
         elif not user_input:
             break

@@ -27,7 +27,7 @@ class DynamoDBControls:
             AttributeDefinitions=[
                 {
                     "AttributeName": "id",
-                    "AttributeType": "S"
+                    "AttributeType": "N"
                 },
             ],
 
@@ -66,7 +66,7 @@ class DynamoDBControls:
         response = self._client.put_item(
             TableName=self.table_name,
             Item={
-                "id": {"S": "0001"},
+                "id": {"N": "1"},
                 "gender": {"S": "Male"},
                 "age": {"N": "19"},
                 "annual income": {"N": "15"},
