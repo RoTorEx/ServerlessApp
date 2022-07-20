@@ -1,4 +1,4 @@
-import json
+import time
 
 import boto3
 
@@ -40,5 +40,6 @@ def lambda_handler(event, context):
             batch.put_item(
                 Item=item
             )
+            time.sleep(.1)
 
     return "Success"
