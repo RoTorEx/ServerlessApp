@@ -109,6 +109,6 @@ class S3Bucket:
         folder_name = ""
         key = folder_name + file_name
 
-        self._client.put_object(Bucket=bucket, Key=key)
+        self._client.delete_object(Bucket=bucket, Key=key)
 
         print(f"File '{file_name}' removed successfully!")
