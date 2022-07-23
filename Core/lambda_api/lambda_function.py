@@ -2,14 +2,15 @@ import json
 import logging
 
 import boto3
-
-from methods import (get_home,
-                     get_customer,
-                     post_customer,
-                     patch_customer,
-                     delete_customer,
-                     get_customers,
-                     build_response)
+from methods import (
+    build_response,
+    delete_customer,
+    get_customer,
+    get_customers,
+    get_home,
+    patch_customer,
+    post_customer,
+)
 
 
 def lambda_handler(event, context):

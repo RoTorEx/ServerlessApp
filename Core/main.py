@@ -1,9 +1,8 @@
+import configparser
 import sys
 from pathlib import Path
-import configparser
 
 import boto3
-
 from base import DynamoDBControls, S3Bucket
 
 
