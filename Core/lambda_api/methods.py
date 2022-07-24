@@ -49,6 +49,13 @@ def get_customer(table, logger, id):
 def post_customer(table, logger, request_body):
     '''POST - http://.../customer'''
 
+    for key, value in request_body.items():
+        try:
+            request_body[key] = int(float(value))
+
+        except ValueError:
+            continue
+
     try:
         table.put_item(Item=request_body)
         body = {

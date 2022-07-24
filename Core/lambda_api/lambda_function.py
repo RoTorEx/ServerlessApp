@@ -2,6 +2,7 @@ import json
 import logging
 
 import boto3
+from encoder import decode_auth_token
 from methods import (
     build_response,
     delete_customer,
@@ -13,8 +14,30 @@ from methods import (
 )
 
 
+def policy(event):
+    white_list = ["admin", "alex"]
+
+    try:
+        jwt_token = event["headers"]["JWT"]
+        user_details = decode_auth_token(jwt_token)
+
+        if user_details["name"] in white_list:
+            return True
+
+    except Exception as e:
+        logging.exception(e)
+        return False
+
+    return False
+
+
 def lambda_handler(event, context):
     '''Implemention of CRUD methods.'''
+
+    verify = policy(event)
+
+    if not verify:
+        return build_response(403, "You are not on the white list or token has expired!")
 
     TABLE_NAME = "MallCustomers"
 
@@ -47,8 +70,9 @@ def lambda_handler(event, context):
 
     elif http_method == PATCH and path == CUSTOMER:  # PATCH to /customer
         request_body = json.loads(event["body"])
-        response = patch_customer(table, logger,
-                                  request_body["id"], request_body["update_key"], request_body["update_value"])
+        response = patch_customer(
+            table, logger, request_body["id"], request_body["update_key"], request_body["update_value"]
+        )
 
     elif http_method == DELETE and path == CUSTOMER:  # DELETE to /customer
         request_body = json.loads(event["body"])
