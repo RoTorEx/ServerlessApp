@@ -5,21 +5,17 @@ from decimal import Decimal
 import jwt
 
 
-def decode_auth_token(jwt_token):
-    '''Decodes the auth token.'''
+def encode_auth_token(data):
+    '''Encodes to auth token.'''
     date_time = datetime.datetime.now()
     key = datetime.datetime.strftime(date_time, "%Y-%m-%d %H:%M")
+    encode_data = jwt.encode(data, key, algorithm='HS256')
 
-    try:
-        return jwt.decode(jwt_token, key, algorithms=['HS256'])
+    response = {
+        "token": encode_data
+    }
 
-    except jwt.ExpiredSignatureError:
-        'Signature expired. Please log in again.'
-        return
-
-    except (jwt.InvalidTokenError, jwt.InvalidSignatureError):
-        'Invalid token. Please log in again.'
-        return
+    return response
 
 
 class CustomEncoder(json.JSONEncoder):

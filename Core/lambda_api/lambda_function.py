@@ -2,42 +2,21 @@ import json
 import logging
 
 import boto3
-from encoder import decode_auth_token
 from methods import (
     build_response,
     delete_customer,
+    get_auth,
     get_customer,
     get_customers,
     get_home,
     patch_customer,
+    post_auth,
     post_customer,
 )
 
 
-def policy(event):
-    white_list = ["admin", "alex"]
-
-    try:
-        jwt_token = event["headers"]["JWT"]
-        user_details = decode_auth_token(jwt_token)
-
-        if user_details["name"] in white_list:
-            return True
-
-    except Exception as e:
-        logging.exception(e)
-        return False
-
-    return False
-
-
 def lambda_handler(event, context):
     '''Implemention of CRUD methods.'''
-
-    verify = policy(event)
-
-    if not verify:
-        return build_response(403, "You are not on the white list or token has expired!")
 
     TABLE_NAME = "MallCustomers"
 
@@ -46,6 +25,7 @@ def lambda_handler(event, context):
     PATCH = "PATCH"
     DELETE = "DELETE"
 
+    AUTH = "/auth"
     HOME = "/home"
     CUSTOMER = "/customer"
     CUSTOMERS = "/customers"
@@ -59,7 +39,13 @@ def lambda_handler(event, context):
     logger.setLevel(logging.INFO)
     logger.info(event)
 
-    if http_method == GET and path == HOME:  # GET to /home
+    if http_method == GET and path == AUTH:  # GET to /auth
+        response = get_auth()
+
+    elif http_method == POST and path == AUTH:  # POST to /auth
+        response = post_auth(json.loads(event["body"])["name"])
+
+    elif http_method == GET and path == HOME:  # GET to /home
         response = get_home()
 
     elif http_method == GET and path == CUSTOMER:  # GET to /customer

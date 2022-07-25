@@ -1,29 +1,26 @@
-import json
-
-from methods import build_response, get_auth, post_auth
+from decoder import decode_auth_token
 
 
 def lambda_handler(event, context):
+    '''Check JWT token.'''
+    USER_WHITE_LIST = ["admin", "alex", "sergey"]
 
-    GET = "GET"
-    POST = "POST"
+    jwt_token = event["authorizationToken"]
+    decoded_data = decode_auth_token(jwt_token)
 
-    AUTH = "/auth"
+    if "name" in decoded_data and decoded_data["name"] in USER_WHITE_LIST:
+        auth = 'Allow'
 
-    http_method = event["httpMethod"]
-    path = event["path"]
+    else:
+        auth = 'Deny'
 
-    if http_method == POST:
-        try:
-            user_name = json.loads(event["body"])["name"]
+    authResponse = {"principalId": decoded_data["name"], "policyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Action": "execute-api:Invoke",
+            "Resource": ["arn:aws:execute-api:us-east-1:384246938732:yvqhf40uva/*/*"],
+            "Effect": auth
+        }]
+    }}
 
-        except KeyError:
-            return build_response(400, "No 'name' value in body request!")
-
-    if http_method == GET and path == AUTH:  # GET to /auth
-        response = get_auth()
-
-    elif http_method == POST and path == AUTH:  # POST to /auth
-        response = post_auth(user_name)
-
-    return response
+    return authResponse
