@@ -52,8 +52,8 @@ def get_customer(table, logger, id):
             }
         )
 
-    except:
-        logger.exception("Do your custom error here. I am just gonna log it out here!")
+    except Exception as e:
+        logger.exception("Do your custom error here. I am just gonna log it out here!", e)
 
     if "Item" in response:
         return build_response(200, response["Item"])
@@ -80,8 +80,8 @@ def post_customer(table, logger, request_body):
             "Item": request_body
         }
 
-    except:
-        logger.exception("Do your custom error here. I am just gonna log it out here!")
+    except Exception as e:
+        logger.exception("Do your custom error here. I am just gonna log it out here!", e)
 
     return build_response(200, body)
 
@@ -107,8 +107,8 @@ def patch_customer(table, logger, id, update_key, update_value):
             "UpdateAttrebutes": response
         }
 
-    except:
-        logger.exception("Do your custom error here. I am just gonna log it out here!")
+    except Exception as e:
+        logger.exception("Do your custom error here. I am just gonna log it out here!", e)
 
     return build_response(200, body)
 
@@ -130,8 +130,8 @@ def delete_customer(table, logger, id):
             "deletedItem": respone
         }
 
-    except:
-        logger.exception("Do your custom error here. I am just gonna log it out here!")
+    except Exception as e:
+        logger.exception("Do your custom error here. I am just gonna log it out here!", e)
 
     if "Attributes" in body["deletedItem"]:
         return build_response(200, body)
@@ -155,7 +155,7 @@ def get_customers(table, logger):
             "customers": result
         }
 
-    except:
-        logger.exception("Do your custom error here. I am just gonna log it out here!")
+    except Exception as e:
+        logger.exception("Do your custom error here. I am just gonna log it out here!", e)
 
     return build_response(200, body)
