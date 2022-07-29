@@ -43,7 +43,7 @@ def aws_dynamodb(service_name, aws_creds):
             break
 
         else:
-            print("Unsupported method. Сheck out the documentation and try again.")
+            print("Unsupported method. Check out the documentation and try again.")
 
 
 def aws_s3(service_name, aws_creds):
@@ -66,7 +66,7 @@ def aws_s3(service_name, aws_creds):
             break
 
         else:
-            print("Unsupported method. Сheck out the documentation and try again.")
+            print("Unsupported method. Check out the documentation and try again.")
 
 
 def main():
